@@ -30,11 +30,32 @@ public:
     
     void sliderValueChanged(juce::Slider* slider) override
     {
+        //how the frontend talks to the backend using the Listener class and using a pure virtual class sliderValueChange
+        //note this is for envelope sliders
+        
         if (slider == &attackSlider){
             
         
             params.attack = attackSlider.getValue();
-            DBG("attackTime: " << params.attack);
+            
+        }
+        
+        if (slider == &decaySlider)
+        {
+            params.decay = decaySlider.getValue();
+            
+        }
+        
+        if (slider == &sustainSlider)
+        {
+            params.sustain = sustainSlider.getValue();
+            
+        }
+        
+        if (slider == &releaseSlider)
+        {
+            params.release = releaseSlider.getValue();
+            
         }
     }
     
@@ -46,12 +67,12 @@ public:
     
     void NoteOnClicked()
     {
-        DBG("toggle value: " << (int)noteOn.isOver());
+        
         
         if (noteOn.isOver())
         {
-            mADSRParams.noteOn();
-            //DBG("toggle value" << noteOnOff.getToggleState());
+            mADSRParams.noteOn(); //this is like a gate on
+            
         }
         
        
@@ -60,11 +81,11 @@ public:
     
     void NoteOffClicked()
     {
-        DBG("toggle value: " << (int)noteOff.isOver());
+        
         if (noteOff.isOver())
        {
-           mADSRParams.noteOff();
-           //DBG("toggle value" << noteOnOff.getToggleState());
+           mADSRParams.noteOff(); //this is like a gate off
+           
        }
     }
    
@@ -90,15 +111,19 @@ private:
     
     juce::TextButton noteOn;
     juce::TextButton noteOff;
-    int buttonState;
+    
     
     float currentLevel;
     float targetLevel;
     
     float attackTime;
-    juce::ScopedPointer <juce::AudioProcessorValueTreeState::SliderAttachment> attackTree;
+    float decayTime;
+    float sustainTime;
+    float releaseTime;
     
-    juce::ADSR::Parameters params;
+    
+    
+    juce::ADSR::Parameters params; // to get access to private struct parameters in ADSR class
     
     int samplesToTarget;
     

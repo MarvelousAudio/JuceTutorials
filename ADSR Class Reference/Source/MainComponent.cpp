@@ -8,27 +8,27 @@ MainComponent::MainComponent()
     setSize (800, 600);
     setAudioChannels(0, 2);
     
-    //mADSRParams.setSampleRate(44100.0f);
-    targetLevel = 0.125f;
+   
+    targetLevel = 0.125f; //initialize target level
 
-    levelSlider.setRange (0.0, 0.25);
-    levelSlider.setValue (targetLevel, juce::dontSendNotification);
+    levelSlider.setRange (0.0, 0.25); //set range for levelSlider
+    levelSlider.setValue (targetLevel, juce::dontSendNotification); //initializing value for levelSlider
     levelSlider.setTextBoxStyle (juce::Slider::TextBoxRight, false, 100, 20);
-    levelSlider.onValueChange = [this]
+    levelSlider.onValueChange = [this] //levelSlider Listener that talks to GUI
     {
         targetLevel = (float) levelSlider.getValue();
         samplesToTarget = rampLengthSamples;
     };
     
-    levelLabel.setText ("Noise Level", juce::dontSendNotification);
+    levelLabel.setText ("Noise Level", juce::dontSendNotification); //sets the text for levelLabel
 
-    addAndMakeVisible (&levelSlider);
-    addAndMakeVisible (&levelLabel);
+    addAndMakeVisible (&levelSlider); //makes levelSlider visible to user
+    addAndMakeVisible (&levelLabel);  //makes levelSlider visible to user
     //============================================================
     
     //envelope gate button
     noteOn.setButtonText("On");
-//    noteOnOff.setEnabled(true);
+
     addAndMakeVisible(&noteOn);
     noteOn.onClick = [this] { NoteOnClicked(); };
     
@@ -38,60 +38,78 @@ MainComponent::MainComponent()
     noteOff.onClick = [this] { NoteOffClicked(); };
     
     //============================================================
-    attackTime =  5.0f;
     
-    attackSlider.setRange(0.1f, 5.0f);
-    attackSlider.setValue(attackTime, juce::dontSendNotification);
+    //attack
+    attackTime =  0.1f;  //initializes attackTime
+    
+    attackSlider.setRange(0.1f, 5.0f);  //set range for attackSlider in seconds
+    attackSlider.setValue(attackTime, juce::dontSendNotification);  //initializes value for attackSlider
     attackSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 20.0, 10.0);
     
     
-    attackSlider.addListener(this);
+    attackSlider.addListener(this); // listener for attackSlider GUI talks to backend
     
     
     attackLabel.setText("Attack", juce::dontSendNotification);
     
+    
+    //makes attackSlider and attackLabel visible to the user
     addAndMakeVisible(&attackSlider);
     addAndMakeVisible(&attackLabel);
     
    
     //========================================================
-//    decayTargetLevel = 0.1f;
-//    decaySlider.setRange(0.1f, 500.0f);
-//    decaySlider.setValue(decayTargetLevel, juce::dontSendNotification);
-//    decaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 20.0, 10.0);
-//
-//    decaySlider.onValueChange = [this]
-//    {
-//        decayTargetLevel = (float) decaySlider.getValue();
-//        //samplesToTarget = rampLengthSamples;
-//    };
-//
-//    addAndMakeVisible(&decaySlider);
-//
-//    //=======================================================
-//    sustainTargetLevel = 0.8f;
-//    sustainSlider.setRange(0.1f, 0.8f);
-//    sustainSlider.setValue(sustainTargetLevel, juce::dontSendNotification);
-//    sustainSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 20.0, 10.0);
-//
-//    sustainSlider.onValueChange = [this]
-//    {
-//        sustainTargetLevel = (float) decaySlider.getValue();
-//    };
-//
-//    addAndMakeVisible(&sustainSlider);
-//
-//    //=======================================================
-//    releaseTargetLevel = 0.1f;
-//    releaseSlider.setRange(0.1f, 5000.0f);
-//    releaseSlider.setValue(releaseTargetLevel);
-//    releaseSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 20.0, 10.0);
-//    releaseSlider.onValueChange = [this]
-//    {
-//        releaseTargetLevel = (float) decaySlider.getValue();
-//    };
-//
-//    addAndMakeVisible(&releaseSlider);
+    
+    //decay
+    decayTime = 0.1f; //initializes decayTime
+    
+    decaySlider.setRange(0.1f, 0.5f); //set range for decaySlider in seconds
+    decaySlider.setValue(decayTime, juce::dontSendNotification); // initializes decaySlider
+    decaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 20.0, 10.0);
+
+    decaySlider.addListener(this); // listener for decaySlider GUI talks to backend
+    
+    decayLabel.setText("Decay", juce::dontSendNotification); //set text for decayLabel
+    
+    //makes decaySlider and decayLabel visible to the user
+    addAndMakeVisible(&decaySlider);
+    addAndMakeVisible(&decayLabel);
+
+    //=======================================================
+    
+    //sustain
+    sustainTime = 0.8f; //initializes sustainTime
+    
+    
+    sustainSlider.setRange(0.1f, 0.8f); // sets range for sustainSlider in seconds
+    sustainSlider.setValue(sustainTime, juce::dontSendNotification); // initializes sustainSlider
+    sustainSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 20.0, 10.0);
+    
+    sustainLabel.setText("Sustain", juce::dontSendNotification); //set text for decayLabel
+    
+    sustainSlider.addListener(this); // listener for decaySlider GUI talks to backend
+    
+    //makes sustainSlider and sustainLabel visible to user
+    addAndMakeVisible(&sustainSlider);
+    addAndMakeVisible(&sustainLabel);
+    
+    //=======================================================
+    
+    //release
+    releaseTime = 0.1f; //initializes releaseTime
+    
+    
+    releaseSlider.setRange(0.1f, 5.0f); //set range for releaseSlider in seconds
+    releaseSlider.setValue(releaseTime, juce::dontSendNotification); //initializes value for releaseSlider
+    releaseSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 20.0, 10.0);
+    
+    releaseLabel.setText("Release", juce::dontSendNotification); //sets text to releaseLabel
+    
+    releaseSlider.addListener(this); // Listener for releaseSlider GUI talks to backend
+    
+    //makes releaseSlider and releaseLabel visible to user
+    addAndMakeVisible(&releaseSlider);
+    addAndMakeVisible(&releaseLabel);
     
 }
 
@@ -104,15 +122,9 @@ MainComponent::~MainComponent()
 //==============================================================================
 void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
 {
-    // This function will be called when the audio device is started, or when
-    // its settings (i.e. sample rate, block size, etc) are changed.
-
-    // You can use this function to initialise any resources you might need,
-    // but be careful - it will be called on the audio thread, not the GUI thread.
-
-    // For more details, see the help for AudioProcessor::prepareToPlay()
-    mADSRParams.setSampleRate(44100.0f);
-    resetParameters();
+    
+    mADSRParams.setSampleRate(44100.0f); //sets samples rate for envelope
+    resetParameters(); //call to resetParameters wich initializes samplesToTarget
 }
 
 void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
@@ -123,10 +135,8 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
     mADSRParams.setParameters(params);
     if (samplesToTarget > 0)
     {
-        auto levelIncrement = (targetLevel - currentLevel) / (float) samplesToTarget;
-//        auto attackIncrement = (attackTargetLevel - attackCurrentLevel) / (float) samplesToTarget;
-        //auto decayIncrement = (decay)
         
+        auto levelIncrement = (targetLevel - currentLevel) / (float) samplesToTarget;
         auto numSamplesThisTime = juce::jmin (numSamplesRemaining, samplesToTarget);
         
         for (auto sample = 0; sample < numSamplesThisTime; ++sample)
@@ -183,11 +193,23 @@ void MainComponent::paint (juce::Graphics& g)
 
 void MainComponent::resized()
 {
+    
+    //paints object to GUI
     levelLabel .setBounds (10, 10, 90, 20);
     levelSlider.setBounds (100, 10, getWidth() - 110, 20);
     
     attackLabel.setBounds(0, 100, 40, 20);
     attackSlider.setBounds(0, 120, 40, 40);
+    
+    decayLabel.setBounds(60, 100, 40, 20);
+    decaySlider.setBounds(60, 120, 40, 40);
+    
+    sustainLabel.setBounds(120, 100, 100, 20);
+    sustainSlider.setBounds(120, 120, 40, 40);
+    
+    releaseLabel.setBounds(180, 100, 100, 20);
+    releaseSlider.setBounds(180, 120, 40, 40);
+    
     noteOn.setBounds(0, 190, getWidth() - 20, 20);
     noteOff.setBounds(0, 210, getWidth() - 20, 20);
     
