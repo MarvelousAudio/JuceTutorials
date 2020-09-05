@@ -30,59 +30,43 @@
         
     private:
         
+        //function:openButtonClicked
         void openButtonClicked()
         {
-            juce::FileChooser chooser ("Select a Aiff file to play...", {}, "*.aiff");
+            juce::FileChooser chooser ("Select a Aiff file to play...", {}, "*.aiff"); //type of file to be used in order to open
             
-            if (chooser.browseForFileToOpen())
+            if (chooser.browseForFileToOpen()) // opens finder/file explorer
             {
-                auto file = chooser.getResult();
-    //            juce::FileInputStream fis(file); //creating inputstream
-    //            auto* reader = readAiff.createReaderFor (&fis,true);
-    //
-                DBG("file opened"); //debug
                 
-                
-                if (file.existsAsFile())
+                auto file = chooser.getResult(); // get file
+   
+                if (file.existsAsFile()) // check if file exists
                 {
-                    DBG("file exists");
                     
-                    //juce::FileInputStream fis(file); //creating inputstream
+                    std::unique_ptr<juce::FileInputStream> fis(new juce::FileInputStream (file)); //must create fis in heap in order to create reader!
                     
-                    //juce::FileInputStream fis(file);
-                    //juce::AudioFormatReader mAudioFormatReader;
-                    //fis.getStatus();//creating inputstream
-                    std::unique_ptr<juce::FileInputStream> fis(new juce::FileInputStream (file));
-                    //auto* reader = readAiff.createReaderFor (mAudioFormatReader.getFile(&file),true);
-                    auto* reader = readAiff.createReaderFor ( fis.release(),true);                    //auto* reader = readAiff.createMemoryMappedReader(&fis);
-                    //auto* reader = readAiff.createMemoryMappedReader(file);
+                    auto* reader = readAiff.createReaderFor ( fis.release(),true); // creates a reader for audio file in .aiff format
                     
-//                    fis.~FileInputStream();
-                    if (reader != nullptr)
+                    if (reader != nullptr) // if reader is not empty do this
                     {
-//                     if (! fis.failedToOpen())
-//                     {
-//                        DBG("file OpenedOK");
-//                        DBG("can handlefile " << (int)readAiff.canHandleFile(file));
-//                        
+                       
                         std::unique_ptr<juce::AudioFormatReaderSource> newSource(new juce::AudioFormatReaderSource (reader, true));
-                        transportSource.setSource (newSource.get(), 0, nullptr, reader->sampleRate);
-                        playButton.setEnabled (true);
                         
-                        readerSource.reset(newSource.release());
-                       // readerSource = reader;
-    //                    readerSource = readAiff.createReaderFor(&fis, true);
-                        //playButton.setEnabled (true);
-                       // readerSource.reset (reader.release());
+                        transportSource.setSource (newSource.get(), 0, nullptr, reader->sampleRate); //gets source of audio for transport to play
+                        
+                        playButton.setEnabled (true); //enables playbutton when file is loaded
+                        
+                        readerSource.reset(newSource.release()); // transfers pointer to readersoucre.
+                      
                     }
-                    
-                    //readerSource.reset (newSource.release());
                 }
-                
             }
-        }
+        }//end:openButtonClick
         
-         void changeListenerCallback (juce::ChangeBroadcaster* source) override
+        //===========================================================================================================================
+        
+        //function:changeListenerCallback
+        void changeListenerCallback (juce::ChangeBroadcaster* source) override
         {
            if (source == &transportSource)
            {
@@ -91,41 +75,57 @@
                else
                    changeState (Stopped);
            }
-        }
+        }//end:changeListenerCallback
         
+        
+        //============================================================================================================================
+       
+        // function:playButtonClicked()
         void playButtonClicked()
         {
-            //DBG("play works");
-            changeState(Starting);
-            //getNextAudioBlock(juce::AudioSourceChannelInfo());
             
-            DBG("play works");
-        }
+            changeState(Starting); //when button is pressed it calls changeState to starting to start sample playback.
+           
+            
+           
+        }// end:playButtonClicked()
         
+        //==============================================================================================================================
+        
+        // function stopButtonClicked()
         void stopButtonClicked()
         {
-            changeState (Stopping);
-        }
+            changeState (Stopping);//when button is pressed it calls changeState to stopping, stopping the audio
+            
+            
+        }// end:stopButtonClicked()
         
+        //==============================================================================================================================
+        
+        //enum:TransportState
         enum TransportState
         {
             Stopped,
-            Starting,
-            Playing,
+            Starting, //why enum? well each state is just really a number as we change state the function changeState is able to switch
+            Playing,  //between them.
             Stopping
-        };
+            
+        };//end:TransportState
+        
+        //==============================================================================================================================
         
         
+        //function changeState
         void changeState (TransportState newState)
         {
             if (state != newState)
             {
                 state = newState;
 
-                switch (state)
-                {
+                switch (state)                                          //switches states. each state has a task to do when called. each
+                {                                                       //is from transportstate and are just interger values.
                     case Stopped:
-                        //stopButton.setEnabled (false);
+                        stopButton.setEnabled (false);
                         playButton.setEnabled (true);
                         transportSource.setPosition (0.0);
                         break;
@@ -136,7 +136,7 @@
                         break;
 
                     case Playing:
-                        //stopButton.setEnabled (true);
+                        stopButton.setEnabled (true);
 
                         break;
 
@@ -145,16 +145,16 @@
                         break;
                 }
             }
-        }
+        }//end:changeState
 
         //==============================================================================
         // Your private member variables go here...
-        juce::TextButton openButton;
+        juce::TextButton openButton;    //GUI text buttons
         juce::TextButton playButton;
         juce::TextButton stopButton;
         
-        juce::AiffAudioFormat readAiff;
-        //juce::AiffAudioFormatReader formatReaderAiff;
+        juce::AiffAudioFormat readAiff; //What the project is based on!
+        
         
         std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
         
