@@ -20,7 +20,8 @@ AudioBufferTypeClassTemplateReferenceAudioProcessor::AudioBufferTypeClassTemplat
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
-dryWetTime(0.0f)
+dryWetTime(0.0f),
+delayTime(0.0f)
 //tree(*this, nullptr, "PARAMETERS", createParameterLayout())
 #endif
 {

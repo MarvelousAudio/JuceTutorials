@@ -55,7 +55,7 @@ public:
     
     
     float dryWetTime;
-    
+    float delayTime;
 //    juce::AudioProcessorValueTreeState tree;
 //    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 //    
@@ -64,5 +64,6 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioBufferTypeClassTemplateReferenceAudioProcessor)
     
     //juce::AudioProcessorValueTreeState tree;
+    juce::AudioBuffer<float> delayBuffer;
     
 };

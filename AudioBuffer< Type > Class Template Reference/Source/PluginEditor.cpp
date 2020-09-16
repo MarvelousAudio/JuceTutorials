@@ -24,21 +24,23 @@ AudioBufferTypeClassTemplateReferenceAudioProcessorEditor::AudioBufferTypeClassT
     sDryWet.setValue(0.5f);
     sDryWet.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 200, 40);
     addAndMakeVisible(&sDryWet);
+    
+    //Slider dry/wet Listener
     sDryWet.addListener(this);
-    
-
-    
-    
     
     //Dry/Wet Label GUI
     lDryWet.setText("Dry/Wet", juce::NotificationType::dontSendNotification);
     addAndMakeVisible(&lDryWet);
     
+    //===========================================================================================
     //Delay Slider GUI
     sDelay.setRange(0.0f, 5000.0f);
     sDelay.setValue(0.0f);
     sDelay.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 200, 40); //remember to paint slider
     addAndMakeVisible(&sDelay);
+    
+    //Slider delay Listener
+    sDelay.addListener(this);
     
     //Delay Label GUI
     lDelay.setText("Delay", juce::NotificationType::dontSendNotification); //remember to paint label
@@ -71,6 +73,10 @@ void AudioBufferTypeClassTemplateReferenceAudioProcessorEditor::resized()
     sDryWet.setBounds(0, 0, 200, 100);
     lDryWet.setBounds(0, 60, 200, 40);
     //==============================================
+    
+    //Delay Slider & Label
+    sDelay.setBounds(0, 200, 200, 100);
+    lDelay.setBounds(0, 260, 200, 40);
 }
 
 
@@ -83,5 +89,12 @@ void AudioBufferTypeClassTemplateReferenceAudioProcessorEditor::sliderValueChang
         audioProcessor.dryWetTime = sDryWet.getValue();
     }
     
-   DBG("dryWetTime" << audioProcessor.dryWetTime);  //note debug mode has to be on. its off by default!
+   //DBG("dryWetTime" << audioProcessor.dryWetTime);  //note debug mode has to be on. its off by default!
+    
+    if (slider == &sDelay)
+    {
+        audioProcessor.delayTime = sDelay.getValue();
+    }
+    
+    DBG("delayTime" << audioProcessor.delayTime);
 }
